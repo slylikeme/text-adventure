@@ -1,0 +1,8 @@
+			HealingRoom		EscapeRoom
+		CavedInDungeon	OgreRoom	PeopleDungeon	LordRoom
+		Find5GoldRoom		FindSwordRoom	
+		EmptyDungeon			
+GiantSpiderRoom	EmptyDungeon	StartingRoom	CavedInDungeon	EmptyDungeon	FindDaggerRoom
+		Find5GoldRoom			
+		PeopleDungeon			
+		SnakePitRoom			
