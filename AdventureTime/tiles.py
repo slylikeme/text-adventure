@@ -35,6 +35,7 @@ class MapTile:
         """Returns all of the available actions in this room."""
         moves = self.adjacent_moves()
         moves.append(actions.ViewInventory())
+        moves.append(actions.Heal())
         return moves
 
 
@@ -79,8 +80,6 @@ class SnakePitRoom(MapTile):
         a thought enters your head:
 
         Maybe I should not have gone in this room...
-
-        You have died!
         """
 
     def modify_player(self, player):
@@ -98,41 +97,6 @@ class HealingRoom(MapTile):
 
     def modify_player(self, player):
         player.hp = 100
-
-
-class LootRoom(MapTile):
-    def __init__(self, x, y, item):
-        self.item = item
-        super().__init__(x, y)
-
-    def add_loot(self, player):
-        if isinstance(self.item, items.Gold):
-            player.add_gold(self.item.amt)
-        else:
-            player.inventory.append(self.item)
-
-        self.item = None
-
-    def modify_player(self, player):
-        if self.item:
-            self.add_loot(player)
-
-
-class EnemyRoom(MapTile):
-    def __init__(self, x, y, enemy):
-        self.enemy = enemy
-        super().__init__(x, y)
-
-    def modify_player(self, player):
-        if self.enemy.is_alive():
-            player.hp = player.hp - self.enemy.damage
-            print("Enemy does {} damage. You have {} hp remaining.".format(self.enemy.damage, player.hp))
-
-    def available_actions(self):
-        if self.enemy.is_alive():
-            return [actions.Flee(tile=self), actions.Attack(enemy=self.enemy)]
-        else:
-            return self.adjacent_moves()
 
 
 class EmptyDungeon(MapTile):
@@ -175,6 +139,26 @@ class PeopleDungeon(MapTile):
     def modify_player(self, player):
         # Room has no action on the player
         pass
+
+
+class EnemyRoom(MapTile):   # EnemyRoom parent class
+    def __init__(self, x, y, enemy):
+        self.enemy = enemy
+        super().__init__(x, y)
+
+    def modify_player(self, player):
+        if self.enemy.is_alive():
+            player.hp = player.hp - self.enemy.damage
+            print("Enemy does {} damage. You have {} hp remaining.".format(self.enemy.damage, player.hp))
+
+    def available_actions(self):
+        if self.enemy.is_alive():
+            return [actions.Flee(tile=self), actions.Attack(enemy=self.enemy), actions.Heal()]
+        else:
+            moves = self.adjacent_moves()
+            moves.append(actions.ViewInventory())
+            moves.append(actions.Heal())
+            return moves
 
 
 class GiantSpiderRoom(EnemyRoom):
@@ -226,6 +210,49 @@ class LordRoom(EnemyRoom):
             return """
             A pile of rancid ashes is all that remains of the once mighty Dungeon Lord.
             """
+
+
+class LootRoom(MapTile):    # LootRoom parent class
+    def __init__(self, x, y, item):
+        self.item = item
+        super().__init__(x, y)
+
+    def add_loot(self, player):
+        if isinstance(self.item, items.Gold):
+            player.add_gold(self.item.amt)
+        else:
+            player.inventory.append(self.item)
+
+        self.item = None
+
+    def modify_player(self, player):
+        if self.item:
+            self.add_loot(player)
+
+
+class FindPotionRoom(LootRoom):
+    def __init__(self, x, y):
+        super().__init__(x, y, items.HealPotion())
+
+    def intro_text(self):
+        if self.item:
+            return """
+            A statue of a beautiful woman stands in the middle of the room. Her
+            arms are cradling something that is giving off a soft golden glow.
+
+            You walk closer to the statue.
+
+            When you look down into her arms you see a small glass vial filled
+            with a swirling golden liquid.
+
+            You feel healthier already as you store the potion in your inventory.
+            """
+        else:
+            return """
+            The golden light is gone from the room, giving it a much more somber feel.
+            The statue is barely discernible in the gloom.
+            """
+
 
 class FindDaggerRoom(LootRoom):
     def __init__(self, x, y):

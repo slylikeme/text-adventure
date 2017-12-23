@@ -46,6 +46,11 @@ class ViewInventory(Action):
         super().__init__(method=Player.print_inventory, name="View Inventory", hotkey="i")
 
 
+class Heal(Action):
+    def __init__(self):
+        super().__init__(method=Player.heal_self, name="Heal Self", hotkey="h")
+
+
 class Attack(Action):
     def __init__(self, enemy):
         super().__init__(method=Player.attack, name="Attack", hotkey="a", enemy=enemy)

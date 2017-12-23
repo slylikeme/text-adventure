@@ -3,6 +3,6 @@
 		Find5GoldRoom		FindSwordRoom	
 		EmptyDungeon			
 GiantSpiderRoom	EmptyDungeon	StartingRoom	CavedInDungeon	EmptyDungeon	FindDaggerRoom
-		Find5GoldRoom			
+FindPotionRoom		Find5GoldRoom			
 		PeopleDungeon			
 		SnakePitRoom			

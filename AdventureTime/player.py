@@ -20,6 +20,7 @@ class Player():
     def print_inventory(self):
         for item in self.inventory:
             print(item, '\n')
+        print("You have {} hitpoints.\n ".format(self.hp))
 
     def add_gold(self, amt):
         for i, j in enumerate(self.inventory):
@@ -42,6 +43,24 @@ class Player():
 
     def move_west(self):
         self.move(dx=-1, dy=0)
+
+    def heal_self(self):
+        best_potion = None
+        max_heal = 0
+        for i in self.inventory:
+            if isinstance(i, items.HealPotion):
+                if i.healing_value > max_heal:
+                    max_heal = i.healing_value
+                    best_potion = i
+
+        try:
+            self.hp += best_potion.healing_value
+            print("You heal for {}. Your hp is now {}.\n".format(best_potion.healing_value, self.hp))
+            self.inventory.remove(best_potion)
+
+        except:
+            print("You dont have a healing potion!\n")
+
 
     def attack(self, enemy):
         best_weapon = None
